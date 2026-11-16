@@ -1,0 +1,165 @@
+{
+  "escenarios": {
+    "Sin MP": {
+      "salud_final": 0.08105046450038665,
+      "disp_final": 46.91053274880282,
+      "disp_media": 71.95700868992428,
+      "inact_media": 28.042991310075674,
+      "costo_mant": 211761.05754017094,
+      "costo_inact": 1005790.715771556,
+      "costo_total": 1217551.773311727
+    },
+    "MP baja (cada 12 m)": {
+      "salud_final": 0.6062423651534277,
+      "disp_final": 81.70719465892103,
+      "disp_media": 89.31766904825237,
+      "inact_media": 10.682330951747584,
+      "costo_mant": 264339.0034452384,
+      "costo_inact": 383422.34310451336,
+      "costo_total": 647761.3465497517
+    },
+    "MP intermedia (cada 6 m)": {
+      "salud_final": 0.7833708370656054,
+      "disp_final": 94.69734233927024,
+      "disp_media": 94.7457101912113,
+      "inact_media": 5.2542898087887,
+      "costo_mant": 302842.27200731554,
+      "costo_inact": 189147.17793860214,
+      "costo_total": 491989.4499459177
+    },
+    "MP intensiva (cada 3 m)": {
+      "salud_final": 0.8805819987524287,
+      "disp_final": 95.75515655090517,
+      "disp_media": 95.65385878438788,
+      "inact_media": 4.346141215612084,
+      "costo_mant": 386044.5265318785,
+      "costo_inact": 156476.27842701264,
+      "costo_total": 542520.8049588911
+    }
+  },
+  "barrido_intervalo": {
+    "0.4": {
+      "intervalo_optimo": 5.5,
+      "costo_min": 537.3581245835543
+    },
+    "0.6": {
+      "intervalo_optimo": 6.5,
+      "costo_min": 491.8558162846837
+    },
+    "0.8": {
+      "intervalo_optimo": 7.0,
+      "costo_min": 461.8131373235447
+    }
+  },
+  "sensibilidad": [
+    {
+      "parametro": "Capacidad del taller",
+      "costo_m25": 309376.7793469877,
+      "costo_p25": 0.0,
+      "disp_m25": -9.709629273017924,
+      "disp_p25": 0.0
+    },
+    {
+      "parametro": "Tasa base de fallas",
+      "costo_m25": -89585.13454820402,
+      "costo_p25": 288584.87091048365,
+      "disp_m25": 1.2654938739933073,
+      "disp_p25": -7.589629960443176
+    },
+    {
+      "parametro": "Costo unitario MC",
+      "costo_m25": -47286.794484650716,
+      "costo_p25": 47286.794484650134,
+      "disp_m25": 0.0,
+      "disp_p25": 0.0
+    },
+    {
+      "parametro": "Costo de inactividad",
+      "costo_m25": -47286.79448465054,
+      "costo_p25": 47286.79448465048,
+      "disp_m25": 0.0,
+      "disp_p25": 0.0
+    },
+    {
+      "parametro": "Sensibilidad falla a salud",
+      "costo_m25": -41109.639904399985,
+      "costo_p25": 41173.359352192376,
+      "disp_m25": 0.5807312562213554,
+      "disp_p25": -0.5816368600431332
+    },
+    {
+      "parametro": "Efectividad del MP",
+      "costo_m25": 31614.8243579017,
+      "costo_p25": -22868.13427715766,
+      "disp_m25": -0.44710924136728636,
+      "disp_p25": 0.32329428513318703
+    },
+    {
+      "parametro": "Tasa base de degradación",
+      "costo_m25": -29885.17204041971,
+      "costo_p25": 27233.671165004955,
+      "disp_m25": 0.4224245357180365,
+      "disp_p25": -0.3849163868612777
+    },
+    {
+      "parametro": "Costo unitario MP",
+      "costo_m25": -28423.773517178604,
+      "costo_p25": 28423.773517178255,
+      "disp_m25": 0.0,
+      "disp_p25": 0.0
+    },
+    {
+      "parametro": "Factor de sobrecarga",
+      "costo_m25": -2695.981922453677,
+      "costo_p25": 2705.898607609037,
+      "disp_m25": 0.038108092942181315,
+      "disp_p25": -0.03824850386614287
+    },
+    {
+      "parametro": "Retraso del efecto del MP",
+      "costo_m25": -1611.607671769103,
+      "costo_p25": 1701.0369067367865,
+      "disp_m25": 0.022669442368993487,
+      "disp_p25": -0.023927764384382044
+    }
+  ],
+  "base_intermedia": {
+    "costo_total": 491989.4499459177,
+    "disp_media": 94.7457101912113
+  },
+  "validacion": {
+    "conservacion_max_error": 8.526512829121202e-14,
+    "paso_integracion": {
+      "0.5": 491929.31078187627,
+      "0.25": 491989.4499459177,
+      "0.125": 492017.76038265636,
+      "0.0625": 492031.5001429897
+    },
+    "sin_fallas_en_falla_final": 3.967902023492588e-19,
+    "sin_degradacion_salud_final": 0.85,
+    "taller_ilimitado_inact_media": 8.9838272803253,
+    "sin_mp_inact_media": 28.042991310075674,
+    "salud_min_max": [
+      0.08105046450038665,
+      0.8805819987524287
+    ]
+  },
+  "retraso": {
+    "0.5": {
+      "salud_min": 0.7834181651287513,
+      "salud_final": 0.7834181651287513
+    },
+    "3.0": {
+      "salud_min": 0.779543159616609,
+      "salud_final": 0.7833708370656054
+    },
+    "6.0": {
+      "salud_min": 0.7515661127288915,
+      "salud_final": 0.7831529461230696
+    },
+    "12.0": {
+      "salud_min": 0.710224556292451,
+      "salud_final": 0.7799371390262313
+    }
+  }
+}

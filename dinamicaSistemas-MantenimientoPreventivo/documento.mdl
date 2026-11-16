@@ -1,0 +1,249 @@
+{UTF-8}
+********************************************************
+	.Parque de equipos: mantenimiento preventivo vs correctivo
+********************************************************
+~	Modelo de dinámica de sistemas (Forrester) de un parque de 100 equipos
+	tecnológicos. Horizonte de 60 meses, paso 0.25 mes (Euler).
+	Escenarios de política (variable Escenario de politica):
+	0 = Sin MP, 1 = MP baja (cada 12 meses), 2 = MP intermedia (cada 6 meses),
+	3 = MP intensiva (cada 3 meses).
+	Los valores de los parámetros son supuestos del proyecto (no datos reales).
+|
+
+********************************************************
+	.NIVELES
+********************************************************
+
+Equipos operativos= INTEG(
+	Reparacion-Fallas,
+		Equipos totales-Equipos en falla inicial)
+	~	equipos
+	~	Nivel: equipos en servicio activo.
+	|
+
+Equipos en falla= INTEG(
+	Fallas-Reparacion,
+		Equipos en falla inicial)
+	~	equipos
+	~	Nivel: equipos fuera de servicio, esperando o recibiendo reparación
+		(inactividad). Operativos + en falla = equipos totales (se conserva).
+	|
+
+Salud del parque= INTEG(
+	Recuperacion por MP-Degradacion,
+		Salud inicial)
+	~	Dmnl [0,1]
+	~	Nivel: índice acumulado de condición física/funcional del parque
+		(1 = perfecto, 0 = totalmente degradado).
+	|
+
+Costo acumulado de mantenimiento= INTEG(
+	Costo MP+Costo MC,
+		0)
+	~	USD
+	~	Nivel: dinero acumulado en mantenimiento preventivo y correctivo.
+	|
+
+Costo acumulado de inactividad= INTEG(
+	Costo inactividad,
+		0)
+	~	USD
+	~	Nivel: pérdida acumulada por equipos fuera de servicio.
+	|
+
+********************************************************
+	.FLUJOS
+********************************************************
+
+Fallas= Equipos operativos*Tasa de fallas
+	~	equipos/Month
+	~	Flujo: equipos que pasan de operativos a en falla.
+	|
+
+Reparacion= MIN(Equipos en falla/Tiempo de reparacion, Capacidad del taller)
+	~	equipos/Month
+	~	Flujo: equipos que vuelven a operar. Limitado por la capacidad del taller;
+		cuando se satura se acumula la cola (bucle reforzador de congestión).
+	|
+
+Degradacion= Salud del parque*Tasa base de degradacion*(1+Factor de sobrecarga
+	*Fraccion de equipos en falla)
+	~	1/Month
+	~	Flujo: pérdida de salud. Aumenta cuando hay muchos equipos parados
+		porque los operativos soportan más carga.
+	|
+
+Recuperacion por MP= (1-Salud del parque)*Efectividad del MP*MP efectivo
+	~	1/Month
+	~	Flujo: salud recuperada por el mantenimiento preventivo. Proporcional a la
+		brecha de salud (1 - salud): rendimientos decrecientes.
+	|
+
+Costo MP= Frecuencia MP*Equipos operativos*Costo unitario MP
+	~	USD/Month
+	~	Flujo: gasto en mantenimiento preventivo.
+	|
+
+Costo MC= Reparacion*Costo unitario MC
+	~	USD/Month
+	~	Flujo: gasto en mantenimiento correctivo (reparaciones).
+	|
+
+Costo inactividad= Equipos en falla*Costo inactividad por equipo mes
+	~	USD/Month
+	~	Flujo: pérdida por equipos parados.
+	|
+
+********************************************************
+	.AUXILIARES
+********************************************************
+
+Tasa de fallas= Tasa base de fallas*(1+Sensibilidad falla salud*(1-Salud del parque))
+	~	1/Month
+	~	Fracción de equipos operativos que fallan por mes. Crece al perder salud.
+	|
+
+Fraccion de equipos en falla= Equipos en falla/Equipos totales
+	~	Dmnl
+	~	Proporción del parque fuera de servicio.
+	|
+
+Intervalo MP= IF THEN ELSE(Escenario de politica=0, 0,
+	IF THEN ELSE(Escenario de politica=1, 12,
+	IF THEN ELSE(Escenario de politica=2, 6, 3)))
+	~	Month
+	~	Meses entre intervenciones preventivas por equipo (0 = sin MP).
+	|
+
+Frecuencia MP= ZIDZ(1, Intervalo MP)
+	~	1/Month
+	~	Intervenciones preventivas por equipo y por mes (0 si no hay MP).
+	|
+
+MP efectivo= DELAY1I(Frecuencia MP, Retraso efecto MP, 0)
+	~	1/Month
+	~	Frecuencia de MP percibida por la salud, con retraso de primer orden
+		(el efecto del MP no es instantáneo). Arranca en 0: la política se
+		introduce en t = 0.
+	|
+
+Disponibilidad= Equipos operativos/Equipos totales
+	~	Dmnl
+	~	Fracción del parque operativa.
+	|
+
+Inactividad porcentual= 100*Equipos en falla/Equipos totales
+	~	Dmnl
+	~	Porcentaje del parque fuera de servicio (downtime).
+	|
+
+Costo total acumulado= Costo acumulado de mantenimiento+Costo acumulado de inactividad
+	~	USD
+	~	Costo total del ciclo: mantenimiento + inactividad.
+	|
+
+********************************************************
+	.PARAMETROS Y POLITICA
+********************************************************
+
+Escenario de politica= 2
+	~	Dmnl [0,3,1]
+	~	Selector de política: 0 sin MP, 1 MP baja, 2 MP intermedia, 3 MP intensiva.
+	|
+
+Equipos totales= 100
+	~	equipos
+	~	Tamaño del parque (constante: no hay compras ni bajas).
+	|
+
+Equipos en falla inicial= 4
+	~	equipos
+	~	Equipos fuera de servicio al inicio.
+	|
+
+Salud inicial= 0.85
+	~	Dmnl
+	~	Índice de salud en t = 0.
+	|
+
+Tasa base de fallas= 0.02
+	~	1/Month
+	~	Tasa de fallas de un equipo en salud perfecta (2 % mensual).
+	|
+
+Sensibilidad falla salud= 4
+	~	Dmnl
+	~	Con salud 0 la tasa de fallas es (1+4) = 5 veces la base.
+	|
+
+Tasa base de degradacion= 0.025
+	~	1/Month
+	~	Desgaste natural mensual de la salud.
+	|
+
+Factor de sobrecarga= 2
+	~	Dmnl
+	~	Aumento de la degradación por fracción de equipos parados.
+	|
+
+Efectividad del MP= 0.6
+	~	Dmnl
+	~	Fracción de la brecha de salud que recupera cada intervención por mes.
+	|
+
+Retraso efecto MP= 3
+	~	Month
+	~	Retraso con que el MP se refleja en la salud.
+	|
+
+Tiempo de reparacion= 1.5
+	~	Month
+	~	Tiempo medio de una reparación.
+	|
+
+Capacidad del taller= 4
+	~	equipos/Month
+	~	Máximo de reparaciones por mes.
+	|
+
+Costo unitario MP= 120
+	~	USD
+	~	Costo de una intervención preventiva (supuesto).
+	|
+
+Costo unitario MC= 900
+	~	USD
+	~	Costo de una reparación correctiva (supuesto).
+	|
+
+Costo inactividad por equipo mes= 600
+	~	USD
+	~	Pérdida por cada equipo fuera de servicio durante un mes (supuesto).
+	|
+
+********************************************************
+	.Control
+********************************************************
+~	Simulation Control Parameters
+|
+
+FINAL TIME  = 60
+	~	Month
+	~	The final time for the simulation.
+	|
+
+INITIAL TIME  = 0
+	~	Month
+	~	The initial time for the simulation.
+	|
+
+SAVEPER  = 
+        TIME STEP
+	~	Month [0,?]
+	~	The frequency with which output is stored.
+	|
+
+TIME STEP  = 0.25
+	~	Month [0,?]
+	~	The time step for the simulation.
+	|
